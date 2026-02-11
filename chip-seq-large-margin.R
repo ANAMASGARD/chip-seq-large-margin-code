@@ -309,13 +309,13 @@ viz <- animint(
                 hjust=c(0.5, 0, 0),
                 label=c("0 errors\nlarge margin", "0 errors\nsmall margin", "1 error\nconstant"),
                 vjust=c(0, 1, 0.5)),
-              color="blue", size=3)+
-    # Target intervals (clickable)
+              color="blue", size=5)+
+    # Target intervals (clickable) - thick segment for easier clicking
     geom_segment(aes(log.max.count, min.log.lambda,
                      yend=max.log.lambda, xend=log.max.count),
                  clickSelects="sample.id",
                  data=data.table(intervals, what="regression"),
-                 size=7, alpha=0.7, color="green")+
+                 size=12, alpha=0.6, color="green")+
     # Zero error points
     geom_point(aes(log.max.count, min.log.lambda),
                clickSelects="sample.id",
@@ -329,12 +329,12 @@ viz <- animint(
                clickSelects="sample.id",
                data=data.table(intervals, what="regression"),
                size=tsize, fill="black")+
-    # Sample labels
+    # Sample labels (increased size for readability)
     geom_text(aes(log.max.count, max.log.lambda, label=sample.id,
                   hjust=ifelse(log.max.count==min(log.max.count), 0,
                                ifelse(log.max.count==max(log.max.count), 1, 0.5))),
               clickSelects="sample.id",
-              data=data.table(intervals, what="regression"), vjust=-0.5)+
+              data=data.table(intervals, what="regression"), vjust=-0.5, size=5)+
     # Margin line
     geom_segment(aes(log.max.count, min.log.lambda, yend=predicted, xend=log.max.count),
                  data=data.table(intervals["McGill0002",], what="regression"),
@@ -351,7 +351,7 @@ viz <- animint(
               size=1, color="blue")+
     geom_text(aes(x, y, label=label),
               data=data.table(what="regression", x=5, y=6, label="log(max(coverage))"))+
-    # Zero error segments
+    # Zero error segments (visible green bars)
     geom_segment(aes(peaks, min.log.lambda, yend=max.log.lambda, xend=peaks,
                      key=paste(sample.id, peaks)),
                  showSelected="sample.id",
@@ -369,13 +369,17 @@ viz <- animint(
                      key=peaks),
                  showSelected="sample.id",
                  data=exact.error, size=2)+
-    # Clickable rectangles for peak selection
-    geom_rect(aes(xmin=peaks-0.4, xmax=peaks+0.4,
-                  ymin=notInf(min.log.lambda), ymax=notInf(max.log.lambda),
+    # Clickable rect for easier peak selection (wide rect per band, like widerect)
+    geom_rect(aes(xmin=0, xmax=9, ymin=notInf(min.log.lambda), ymax=notInf(max.log.lambda),
                   key=peaks),
               showSelected="sample.id",
               clickSelects="peaks",
-              alpha=0.2, data=exact.peaks)+
+              alpha=0.25, fill="grey90", data=exact.peaks)+
+    geom_rect(aes(xmin=0, xmax=9, ymin=notInf(min.log.lambda), ymax=notInf(max.log.lambda),
+                  key=peaks),
+              showSelected="sample.id",
+              clickSelects="peaks",
+              alpha=0.25, fill="grey90", data=exact.error)+
     scale_y_continuous("log(penalty)")+
     scale_x_continuous("", breaks=0:9),
   
