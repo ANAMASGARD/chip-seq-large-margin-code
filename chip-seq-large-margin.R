@@ -323,7 +323,7 @@ viz <- animint(
                 hjust=c(0, 0, 0),
                 label=c("0 errors\nlarge margin", "0 errors\nsmall margin", "1 error\nconstant"),
                 vjust=c(0, 1, 0.5)),
-              color="blue", size=4, fill=NA, label.size=0)+
+              color="blue", size=19, fill=NA, label.size=0)+
     # Target intervals (clickable) - thick segment for easier clicking
     geom_segment(aes(log.max.count, min.log.lambda,
                      yend=max.log.lambda, xend=log.max.count),
