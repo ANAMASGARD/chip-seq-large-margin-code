@@ -311,15 +311,14 @@ viz <- animint(
     theme_animint(width=800, height=500)+
     facet_grid(. ~ what, scales="free")+
     ggtitle("Select sample and number of peaks")+
-    geom_text(aes(feature, log.penalty, label=label, vjust=vjust, hjust=hjust),
+    geom_text(aes(feature, log.penalty, label=label, hjust=hjust),
               data=data.table(
                 what="regression",
                 feature=3.2,
                 log.penalty=c(12.5, 11, 9),
                 hjust=c(0, 0, 0),
-                label=c("0 errors\nlarge margin", "0 errors\nsmall margin", "1 error\nconstant"),
-                vjust=c(0, 1, 0.5)),
-              color="blue", size=4)+
+                label=c("0 errors\nlarge margin", "0 errors\nsmall margin", "1 error\nconstant")),
+              color="blue", size=4, vjust=0)+
     # Target intervals (clickable) - thick segment for easier clicking
     geom_segment(aes(log.max.count, min.log.lambda,
                      yend=max.log.lambda, xend=log.max.count),
@@ -344,7 +343,7 @@ viz <- animint(
                   hjust=ifelse(log.max.count==min(log.max.count), 0,
                                ifelse(log.max.count==max(log.max.count), 1, 0.5))),
               clickSelects="sample.id",
-              data=data.table(intervals, what="regression"), vjust=-0.5, size=4)+
+              data=data.table(intervals, what="regression"), vjust=0, size=4)+
     # Margin line
     geom_segment(aes(log.max.count, min.log.lambda, yend=predicted, xend=log.max.count),
                  data=data.table(intervals["McGill0002",], what="regression"),
