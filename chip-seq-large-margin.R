@@ -201,6 +201,15 @@ exact.error <- data.frame(exact.dfs, what=what.error)
 zero.peaks <- subset(exact.peaks, errors==0)
 z.error <- subset(exact.error, errors==0)
 
+### Add per-sample peaks variable names for indirect selection
+exact.peaks$sample.peaks  <- paste0(exact.peaks$sample.id,  "peaks")
+exact.error$sample.peaks  <- paste0(exact.error$sample.id,  "peaks")
+exact.dfs$sample.peaks    <- paste0(exact.dfs$sample.id,    "peaks")
+zero.peaks$sample.peaks   <- paste0(zero.peaks$sample.id,   "peaks")
+z.error$sample.peaks      <- paste0(z.error$sample.id,      "peaks")
+chunk.peak$sample.peaks   <- paste0(chunk.peak$sample.id,   "peaks")
+chunk.region$sample.peaks <- paste0(chunk.region$sample.id, "peaks")
+
 ann.colors <- c(noPeaks="#f6f4bf",
                 peakStart="#ffafaf",
                 peakEnd="#ff4c4c",
@@ -264,8 +273,9 @@ viz <- animint(
   coverage=ggplot()+
     ggtitle("ChIP-seq data and peaks")+
     theme_bw()+
-    theme(panel.margin=grid::unit(0, "cm"))+
-    theme_animint(width=800, height=400)+
+    theme(panel.margin=grid::unit(0, "cm"),
+          strip.text.y=element_text(angle=0, size=8))+
+    theme_animint(width=800, height=500)+
     facet_grid(sample.id ~ ., scales="free")+
     scale_y_continuous("aligned read coverage",
                        breaks=function(limits) floor(limits[2]))+
@@ -280,18 +290,18 @@ viz <- animint(
     animint2::geom_tallrect(aes(xmin=chromStart/1e3, xmax=chromEnd/1e3,
                                 key=paste(sample.id, chromStart),
                                 linetype=status),
-                            showSelected=c("sample.id", "peaks"),
+                            showSelected="sample.peaks",
                             data=chunk.region,
                             color="black", fill=NA, size=1.5)+
     geom_line(aes(base/1e3, count),
               data=disp.counts, color="grey50")+
     geom_segment(aes(chromStart/1e3, 0, xend=chromEnd/1e3, yend=0,
                      key=paste(sample.id, chromStart, chromEnd)),
-                 showSelected=c("sample.id", "peaks"),
+                 showSelected="sample.peaks",
                  data=chunk.peak, color="deepskyblue", size=4)+
     geom_point(aes(chromStart/1e3, 0,
                    key=paste(sample.id, chromStart)),
-               showSelected=c("sample.id", "peaks"),
+               showSelected="sample.peaks",
                data=chunk.peak, color="black", fill="deepskyblue")+
     scale_fill_manual("label", values=ann.colors, breaks=names(ann.colors)),
   
@@ -304,12 +314,12 @@ viz <- animint(
     geom_text(aes(feature, log.penalty, label=label, vjust=vjust, hjust=hjust),
               data=data.table(
                 what="regression",
-                feature=5.8,
+                feature=3.2,
                 log.penalty=c(12.5, 11, 9),
-                hjust=c(0.5, 0, 0),
+                hjust=c(0, 0, 0),
                 label=c("0 errors\nlarge margin", "0 errors\nsmall margin", "1 error\nconstant"),
                 vjust=c(0, 1, 0.5)),
-              color="blue", size=12)+
+              color="blue", size=4)+
     # Target intervals (clickable) - thick segment for easier clicking
     geom_segment(aes(log.max.count, min.log.lambda,
                      yend=max.log.lambda, xend=log.max.count),
@@ -334,7 +344,7 @@ viz <- animint(
                   hjust=ifelse(log.max.count==min(log.max.count), 0,
                                ifelse(log.max.count==max(log.max.count), 1, 0.5))),
               clickSelects="sample.id",
-              data=data.table(intervals, what="regression"), vjust=-0.5, size=12)+
+              data=data.table(intervals, what="regression"), vjust=-0.5, size=4)+
     # Margin line
     geom_segment(aes(log.max.count, min.log.lambda, yend=predicted, xend=log.max.count),
                  data=data.table(intervals["McGill0002",], what="regression"),
@@ -343,7 +353,7 @@ viz <- animint(
     geom_segment(aes(log.max.count, notInf(min.log.lambda),
                      yend=notInf(max.log.lambda), xend=log.max.count,
                      key=paste(sample.id, peaks)),
-                 showSelected=c("sample.id", "peaks"),
+                 showSelected=c("sample.id", "sample.peaks"),
                  data=data.table(exact.dfs, what="regression"), size=1)+
     # Penalty lines
     geom_line(aes(count.grid, log.lambda, group=reg.i),
@@ -354,37 +364,48 @@ viz <- animint(
     # Zero error segments (visible green bars)
     geom_segment(aes(peaks, min.log.lambda, yend=max.log.lambda, xend=peaks,
                      key=paste(sample.id, peaks)),
-                 showSelected="sample.id",
+                 showSelected="sample.peaks",
                  data=zero.peaks, size=4, color="green")+
     geom_segment(aes(errors, min.log.lambda, yend=max.log.lambda, xend=errors,
                      key=paste(sample.id, peaks)),
-                 showSelected="sample.id",
+                 showSelected="sample.peaks",
                  data=z.error, size=4, color="green")+
     # Model complexity segments
     geom_segment(aes(peaks, notInf(min.log.lambda), yend=notInf(max.log.lambda), xend=peaks,
                      key=peaks),
-                 showSelected="sample.id",
+                 showSelected="sample.peaks",
                  data=exact.peaks, size=2)+
     geom_segment(aes(errors, notInf(min.log.lambda), yend=notInf(max.log.lambda), xend=errors,
                      key=peaks),
-                 showSelected="sample.id",
+                 showSelected="sample.peaks",
                  data=exact.error, size=2)+
     # Clickable rect for easier peak selection (wide rect per band, like widerect)
     geom_rect(aes(xmin=0, xmax=9, ymin=notInf(min.log.lambda), ymax=notInf(max.log.lambda),
                   key=peaks),
               showSelected="sample.id",
-              clickSelects="peaks",
+              clickSelects="sample.peaks",
               alpha=0.25, fill="grey90", data=exact.peaks)+
     geom_rect(aes(xmin=0, xmax=9, ymin=notInf(min.log.lambda), ymax=notInf(max.log.lambda),
                   key=peaks),
               showSelected="sample.id",
-              clickSelects="peaks",
+              clickSelects="sample.peaks",
               alpha=0.25, fill="grey90", data=exact.error)+
     scale_y_continuous("log(penalty)")+
     scale_x_continuous("", breaks=0:9),
   
-  # Set initial selection
-  first=list(sample.id="McGill0002", peaks=2)
+  duration=list(
+    McGill0002peaks=2000,
+    McGill0091peaks=2000,
+    McGill0322peaks=2000,
+    McGill0004peaks=2000
+  ),
+  first=list(
+    sample.id="McGill0002",
+    McGill0002peaks=2,
+    McGill0091peaks=0,
+    McGill0322peaks=0,
+    McGill0004peaks=0
+  )
 )
 
 # Print the viz to test locally
