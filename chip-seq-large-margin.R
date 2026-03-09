@@ -315,7 +315,7 @@ viz <- animint(
     theme_animint(width=800, height=500)+
     facet_grid(. ~ what, scales="free")+
     ggtitle("Select sample and number of peaks")+
-    geom_text(aes(feature, log.penalty, label=label, vjust=vjust, hjust=hjust),
+    geom_label_aligned(aes(feature, log.penalty, label=label, vjust=vjust, hjust=hjust),
               data=data.table(
                 what="regression",
                 feature=3.5,
@@ -323,7 +323,7 @@ viz <- animint(
                 hjust=c(0, 0, 0),
                 label=c("0 errors\nlarge margin", "0 errors\nsmall margin", "1 error\nconstant"),
                 vjust=c(0, 1, 0.5)),
-              color="blue", size=4)+
+              color="blue", size=4, fill=NA, label.size=0)+
     # Target intervals (clickable) - thick segment for easier clicking
     geom_segment(aes(log.max.count, min.log.lambda,
                      yend=max.log.lambda, xend=log.max.count),
@@ -401,8 +401,6 @@ viz <- animint(
   first=list(sample.id="McGill0002")
 )
 
-# Print the viz to test locally
-print(viz)
-
 # Deploy to GitHub Pages
-# animint2pages(viz, "chip-seq-large-margin", chromote_sleep_seconds=5)
+Sys.setenv(CHROMOTE_CHROME="/usr/bin/google-chrome")
+animint2pages(viz, "chip-seq-large-margin", chromote_sleep_seconds=5)
