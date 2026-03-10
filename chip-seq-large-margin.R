@@ -277,8 +277,7 @@ viz <- animint(
   coverage=ggplot()+
     ggtitle("ChIP-seq data and peaks")+
     theme_bw()+
-    theme(panel.margin=grid::unit(0, "cm"),
-          strip.text.y=element_text(angle=0, size=8))+
+    theme(panel.margin=grid::unit(0, "cm"))+
     theme_animint(width=800, height=500)+
     facet_grid(sample.id ~ ., scales="free")+
     scale_y_continuous("aligned read coverage",
@@ -312,18 +311,18 @@ viz <- animint(
   penalty=ggplot()+
     theme_bw()+
     theme(panel.margin=grid::unit(0, "lines"))+
-    theme_animint(width=800, height=500)+
-    facet_grid(. ~ what, scales="free")+
+    theme_animint(width=800, height=700)+
+    facet_grid(sample.id ~ what, scales="free")+
     ggtitle("Select sample and number of peaks")+
     geom_label_aligned(aes(feature, log.penalty, label=label, vjust=vjust, hjust=hjust),
               data=data.table(
                 what="regression",
-                feature=3.5,
+                feature=5.8,
                 log.penalty=c(12.5, 11, 9),
-                hjust=c(0, 0, 0),
+                hjust=c(0.5, 0, 0),
                 label=c("0 errors\nlarge margin", "0 errors\nsmall margin", "1 error\nconstant"),
                 vjust=c(0, 1, 0.5)),
-              color="blue", size=16, fill=NA, label.size=0)+
+              color="blue", size=3, fill=NA, label.size=0)+
     # Target intervals (clickable) - thick segment for easier clicking
     geom_segment(aes(log.max.count, min.log.lambda,
                      yend=max.log.lambda, xend=log.max.count),
@@ -368,30 +367,24 @@ viz <- animint(
     # Zero error segments (visible green bars)
     geom_segment(aes(peaks, min.log.lambda, yend=max.log.lambda, xend=peaks,
                      key=paste(sample.id, peaks)),
-                 showSelected="sample.id",
                  data=zero.peaks, size=4, color="green")+
     geom_segment(aes(errors, min.log.lambda, yend=max.log.lambda, xend=errors,
                      key=paste(sample.id, peaks)),
-                 showSelected="sample.id",
                  data=z.error, size=4, color="green")+
     # Model complexity segments
     geom_segment(aes(peaks, notInf(min.log.lambda), yend=notInf(max.log.lambda), xend=peaks,
                      key=peaks),
-                 showSelected="sample.id",
                  data=exact.peaks, size=2)+
     geom_segment(aes(errors, notInf(min.log.lambda), yend=notInf(max.log.lambda), xend=errors,
                      key=peaks),
-                 showSelected="sample.id",
                  data=exact.error, size=2)+
-    # Clickable widerect for easier peak selection (one selector per sample)
+    # Clickable widerect for easier peak selection (one per sample row via faceting)
     animint2::geom_widerect(aes(ymin=notInf(min.log.lambda), ymax=notInf(max.log.lambda),
                                 key=peaks),
-                            showSelected="sample.id",
                             clickSelects=c("sample.peaks"="peaks"),
                             alpha=0.2, data=exact.peaks)+
     animint2::geom_widerect(aes(ymin=notInf(min.log.lambda), ymax=notInf(max.log.lambda),
                                 key=peaks),
-                            showSelected="sample.id",
                             clickSelects=c("sample.peaks"="peaks"),
                             alpha=0.2, data=exact.error)+
     scale_y_continuous("log(penalty)")+
