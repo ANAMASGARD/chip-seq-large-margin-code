@@ -348,7 +348,7 @@ viz <- animint(
                   hjust=ifelse(log.max.count==min(log.max.count), 0,
                                ifelse(log.max.count==max(log.max.count), 1, 0.5))),
               clickSelects="sample.id",
-              data=data.table(intervals, what="regression"), vjust=-0.5, size=16)+
+              data=data.table(intervals, what="regression"), vjust=-0.5, size=5)+
     # Margin line
     geom_segment(aes(log.max.count, min.log.lambda, yend=predicted, xend=log.max.count),
                  data=data.table(intervals["McGill0002",], what="regression"),
@@ -398,7 +398,13 @@ viz <- animint(
     scale_x_continuous("", breaks=0:9),
   
   duration=duration.list,
-  first=list(sample.id="McGill0002")
+  first=list(
+    sample.id="McGill0002",
+    McGill0002peaks=2,
+    McGill0091peaks=1,
+    McGill0322peaks=1,
+    McGill0004peaks=2
+  )
 )
 
 # Deploy to GitHub Pages
