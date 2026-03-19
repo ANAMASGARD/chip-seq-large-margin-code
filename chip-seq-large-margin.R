@@ -312,7 +312,7 @@ viz <- animint(
     theme_bw()+
     theme(panel.margin=grid::unit(0, "lines"))+
     theme_animint(width=800, height=700)+
-    facet_grid(sample.id ~ what, scales="free")+
+    facet_grid(. ~ what, scales="free")+
     ggtitle("Select sample and number of peaks")+
     geom_label_aligned(aes(feature, log.penalty, label=label, vjust=vjust, hjust=hjust),
               data=data.table(
