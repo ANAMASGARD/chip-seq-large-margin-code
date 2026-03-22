@@ -311,7 +311,8 @@ viz <- animint(
   penalty=ggplot()+
     theme_bw()+
     theme(panel.margin=grid::unit(0, "lines"))+
-    theme_animint(width=800, height=700)+
+    # Shorter panel stack (matches coverage height) — avoids an overly tall penalty grid
+    theme_animint(width=800, height=500)+
     facet_grid(. ~ what, scales="free")+
     ggtitle("Select sample and number of peaks")+
     geom_label_aligned(aes(feature, log.penalty, label=label, vjust=vjust, hjust=hjust),
@@ -322,7 +323,7 @@ viz <- animint(
                 hjust=c(0.5, 0, 0),
                 label=c("0 errors\nlarge margin", "0 errors\nsmall margin", "1 error\nconstant"),
                 vjust=c(0, 1, 0.5)),
-              color="blue", size=6, fill=NA, label.size=0)+
+              color="blue", size=9, fill=NA, label.size=0)+
     # Target intervals (clickable) - thick segment for easier clicking
     geom_segment(aes(log.max.count, min.log.lambda,
                      yend=max.log.lambda, xend=log.max.count),
@@ -347,7 +348,7 @@ viz <- animint(
                   hjust=ifelse(log.max.count==min(log.max.count), 0,
                                ifelse(log.max.count==max(log.max.count), 1, 0.5))),
               clickSelects="sample.id",
-              data=data.table(intervals, what="regression"), vjust=-0.5, size=6)+
+              data=data.table(intervals, what="regression"), vjust=-0.5, size=9)+
     # Margin line
     geom_segment(aes(log.max.count, min.log.lambda, yend=predicted, xend=log.max.count),
                  data=data.table(intervals["McGill0002",], what="regression"),
