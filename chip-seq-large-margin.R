@@ -315,21 +315,20 @@ viz <- animint(
     theme_animint(width=800, height=500)+
     facet_grid(. ~ what, scales="free")+
     ggtitle("Select sample and number of peaks")+
-    geom_label_aligned(aes(feature, log.penalty, label=label, vjust=vjust, hjust=hjust),
+    geom_text(aes(feature, log.penalty, label=label, hjust=hjust),
               data=data.table(
                 what="regression",
                 feature=5.8,
-                log.penalty=c(12.5, 11, 9),
+                log.penalty=c(12.8, 10.7, 9.0),
                 hjust=c(0.5, 0, 0),
-                label=c("0 errors\nlarge margin", "0 errors\nsmall margin", "1 error\nconstant"),
-                vjust=c(0, 1, 0.5)),
-              color="blue", size=9, fill=NA, label.size=0)+
+                label=c("0 errors\nlarge margin", "0 errors\nsmall margin", "1 error\nconstant")),
+              color="blue", size=8)+
     # Target intervals (clickable) - thick segment for easier clicking
     geom_segment(aes(log.max.count, min.log.lambda,
                      yend=max.log.lambda, xend=log.max.count),
                  clickSelects="sample.id",
                  data=data.table(intervals, what="regression"),
-                 size=12, alpha=0.6, color="green")+
+                 size=7, alpha=0.7, color="green")+
     # Zero error points
     geom_point(aes(log.max.count, min.log.lambda),
                clickSelects="sample.id",
@@ -348,7 +347,7 @@ viz <- animint(
                   hjust=ifelse(log.max.count==min(log.max.count), 0,
                                ifelse(log.max.count==max(log.max.count), 1, 0.5))),
               clickSelects="sample.id",
-              data=data.table(intervals, what="regression"), vjust=-0.5, size=9)+
+              data=data.table(intervals, what="regression"), vjust=-0.5, size=10)+
     # Margin line
     geom_segment(aes(log.max.count, min.log.lambda, yend=predicted, xend=log.max.count),
                  data=data.table(intervals["McGill0002",], what="regression"),
@@ -368,24 +367,30 @@ viz <- animint(
     # Zero error segments (visible green bars)
     geom_segment(aes(peaks, min.log.lambda, yend=max.log.lambda, xend=peaks,
                      key=paste(sample.id, peaks)),
+                 showSelected="sample.id",
                  data=zero.peaks, size=4, color="green")+
     geom_segment(aes(errors, min.log.lambda, yend=max.log.lambda, xend=errors,
                      key=paste(sample.id, peaks)),
+                 showSelected="sample.id",
                  data=z.error, size=4, color="green")+
     # Model complexity segments
     geom_segment(aes(peaks, notInf(min.log.lambda), yend=notInf(max.log.lambda), xend=peaks,
                      key=peaks),
+                 showSelected="sample.id",
                  data=exact.peaks, size=2)+
     geom_segment(aes(errors, notInf(min.log.lambda), yend=notInf(max.log.lambda), xend=errors,
                      key=peaks),
+                 showSelected="sample.id",
                  data=exact.error, size=2)+
     # Clickable widerect for easier peak selection (one per sample row via faceting)
     animint2::geom_widerect(aes(ymin=notInf(min.log.lambda), ymax=notInf(max.log.lambda),
                                 key=peaks),
+                            showSelected="sample.id",
                             clickSelects=c("sample.peaks"="peaks"),
                             alpha=0.2, data=exact.peaks)+
     animint2::geom_widerect(aes(ymin=notInf(min.log.lambda), ymax=notInf(max.log.lambda),
                                 key=peaks),
+                            showSelected="sample.id",
                             clickSelects=c("sample.peaks"="peaks"),
                             alpha=0.2, data=exact.error)+
     scale_y_continuous("log(penalty)")+
