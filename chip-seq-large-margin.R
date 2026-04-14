@@ -321,8 +321,8 @@ viz <- animint(
                 feature=5.8,
                 log.penalty=c(12.8, 10.7, 9.0),
                 hjust=c(0.5, 0, 0),
-                label=c("0 errors\nlarge margin", "0 errors\nsmall margin", "1 error\nconstant")),
-              color="blue", size=8)+
+                label=c("0 errors\nlarge margin", "0 errors\nsmall\nmargin", "1 error\nconstant")),
+              color="blue", size=12)+
     # Target intervals (clickable) - thick segment for easier clicking
     geom_segment(aes(log.max.count, min.log.lambda,
                      yend=max.log.lambda, xend=log.max.count),
